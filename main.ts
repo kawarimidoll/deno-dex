@@ -13,8 +13,6 @@ import {
 } from "./deps.ts";
 import { isDenoTest, runProcess, watchChanges } from "./utils.ts";
 
-const DENO_DIR = await getDenoDir();
-const DEX_SCRIPT_PATH = join(DENO_DIR, "dex/script.ts");
 const VERSION = "0.1.0";
 const versionInfo = `dex ${VERSION}`;
 
@@ -117,9 +115,10 @@ if (help) {
 const fileFullPath = resolve(Deno.cwd(), `${args[0]}`);
 const dexScript = (clear ? "console.clear();" : "") +
   `import("${fileFullPath}")`;
+const dexScriptPath = join(await getDenoDir(), "dex/script.ts");
 
-await ensureDir(dirname(DEX_SCRIPT_PATH));
-await Deno.writeTextFile(DEX_SCRIPT_PATH, dexScript);
+await ensureDir(dirname(dexScriptPath));
+await Deno.writeTextFile(dexScriptPath, dexScript);
 debugLog({ dexScript });
 
 const cmd = [
@@ -130,7 +129,7 @@ const cmd = [
   "--unstable",
   "--watch",
   ...(quiet ? ["--quiet"] : []),
-  DEX_SCRIPT_PATH,
+  dexScriptPath,
 ];
 debugLog({ cmd });
 
