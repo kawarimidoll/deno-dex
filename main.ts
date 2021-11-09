@@ -11,6 +11,7 @@ import {
   red,
   resolve,
 } from "./deps.ts";
+import { isDenoTest, runProcess, watchChanges } from "./utils.ts";
 
 const DENO_DIR = await getDenoDir();
 const DEX_SCRIPT_PATH = join(DENO_DIR, "dex/script.ts");
@@ -114,16 +115,6 @@ if (help) {
 }
 
 const fileFullPath = resolve(Deno.cwd(), `${args[0]}`);
-
-const options = [
-  "--allow-all",
-  "--no-check",
-  "--unstable",
-  "--watch",
-];
-if (quiet) {
-  options.push("--quiet");
-}
 const dexScript = (clear ? "console.clear();" : "") +
   `import("${fileFullPath}")`;
 
@@ -133,43 +124,27 @@ debugLog({ dexScript });
 
 const cmd = [
   "deno",
-  /^(.*[._])?test\.m?[tj]sx?$/.test(basename(fileFullPath)) ? "test" : "run",
-  ...options,
+  isDenoTest(basename(fileFullPath)) ? "test" : "run",
+  "--allow-all",
+  "--no-check",
+  "--unstable",
+  "--watch",
+  ...(quiet ? ["--quiet"] : []),
   DEX_SCRIPT_PATH,
 ];
 debugLog({ cmd });
 
-let process = Deno.run({ cmd });
-process.status();
+let process = runProcess({ cmd });
 
-// [Build a live reloader and explore Deno! 🦕 - DEV Community](https://dev.to/otanriverdi/let-s-explore-deno-by-building-a-live-reloader-j47)
 if (watch) {
   // https://github.com/denoland/deno/blob/0ec151b8cb2a92bb1765672fa15de23e6c8842d4/cli/file_watcher.rs#L32
   const DEBOUNCE_INTERVAL = 200;
 
-  let reloading = false;
-  for await (const event of Deno.watchFs(watch.split(","))) {
-    if (event.kind !== "modify" || reloading) {
-      continue;
-    }
-    reloading = true;
-
+  watchChanges(watch.split(","), (event) => {
+    debugLog({ detected: event.paths[0] });
     if (!quiet) {
       console.log(brightBlue("Watcher"), "File change detected! Restarting!");
     }
-
-    try {
-      process.kill("SIGTERM");
-    } catch (error) {
-      if (error.message !== "ESRCH: No such process") {
-        throw error;
-      }
-    }
-
-    process.close();
-    process = Deno.run({ cmd });
-    process.status();
-
-    setTimeout(() => (reloading = false), DEBOUNCE_INTERVAL);
-  }
+    process = runProcess({ cmd, ongoingProcess: process });
+  }, { interval: DEBOUNCE_INTERVAL });
 }
