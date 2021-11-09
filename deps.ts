@@ -1,3 +1,4 @@
+export { bold, red } from "https://deno.land/std@0.113.0/fmt/colors.ts";
 export { basename, resolve } from "https://deno.land/std@0.113.0/path/mod.ts";
 export { parse as parseCliArgs } from "https://deno.land/std@0.113.0/flags/mod.ts";
 
