@@ -1,4 +1,7 @@
-const filename = `${Deno.args[0]}`;
+import { basename, resolve } from "https://deno.land/std@0.113.0/path/mod.ts";
+
+const fileFullPath = resolve(Deno.cwd(), `${Deno.args[0]}`);
+const filename = basename(fileFullPath);
 
 const cmd = [
   "deno",
@@ -7,7 +10,7 @@ const cmd = [
   "--no-check",
   "--unstable",
   "--watch",
-  filename,
+  fileFullPath,
 ];
 
 const process = Deno.run({ cmd });
