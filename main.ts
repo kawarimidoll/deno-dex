@@ -90,7 +90,6 @@ if (help) {
 }
 
 const fileFullPath = resolve(Deno.cwd(), `${args[0]}`);
-const filename = basename(fileFullPath);
 
 const options = [
   "--allow-all",
@@ -110,7 +109,7 @@ await Deno.writeTextFile(
 
 const cmd = [
   "deno",
-  /^(.*[._])?test\.m?[tj]sx?$/.test(filename) ? "test" : "run",
+  /^(.*[._])?test\.m?[tj]sx?$/.test(basename(fileFullPath)) ? "test" : "run",
   ...options,
   DEX_SCRIPT_PATH,
 ];
