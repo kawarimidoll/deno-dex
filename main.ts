@@ -1,6 +1,40 @@
 import { basename, resolve } from "https://deno.land/std@0.113.0/path/mod.ts";
+import { parse as parseCliArgs } from "https://deno.land/std@0.113.0/flags/mod.ts";
 
-const fileFullPath = resolve(Deno.cwd(), `${Deno.args[0]}`);
+const VERSION = "0.1.0";
+const versionInfo = `dex ${VERSION}`;
+
+const helpMsg = `${versionInfo}
+An easy deno runner for development.`;
+
+const {
+  "_": args,
+  help,
+  version,
+} = parseCliArgs(
+  Deno.args,
+  {
+    boolean: [
+      "help",
+      "version",
+    ],
+    alias: {
+      h: "help",
+      v: "version",
+    },
+  },
+);
+
+if (version) {
+  console.log(versionInfo);
+  Deno.exit(0);
+}
+if (help) {
+  console.log(helpMsg);
+  Deno.exit(0);
+}
+
+const fileFullPath = resolve(Deno.cwd(), `${args[0]}`);
 const filename = basename(fileFullPath);
 
 const cmd = [
