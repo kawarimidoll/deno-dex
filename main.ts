@@ -2,10 +2,10 @@ import {
   basename,
   bold,
   brightBlue,
-  brightGreen,
   dirname,
   ensureDir,
   getDenoDir,
+  green,
   join,
   parseCliArgs,
   red,
@@ -86,7 +86,7 @@ const {
 );
 
 const debugLog = debug
-  ? (...args: unknown[]) => console.debug(brightGreen("Debug"), ...args)
+  ? (...args: unknown[]) => console.debug(green("Debug"), ...args)
   : () => {};
 
 debugLog({
