@@ -9,16 +9,19 @@ An easy deno runner for development.`;
 const {
   "_": args,
   help,
+  quiet,
   version,
 } = parseCliArgs(
   Deno.args,
   {
     boolean: [
       "help",
+      "quiet",
       "version",
     ],
     alias: {
       h: "help",
+      q: "quiet",
       v: "version",
     },
   },
@@ -36,13 +39,20 @@ if (help) {
 const fileFullPath = resolve(Deno.cwd(), `${args[0]}`);
 const filename = basename(fileFullPath);
 
-const cmd = [
-  "deno",
-  /^(.*[._])?test\.m?[tj]sx?$/.test(filename) ? "test" : "run",
+const options = [
   "--allow-all",
   "--no-check",
   "--unstable",
   "--watch",
+];
+if (quiet) {
+  options.push("--quiet");
+}
+
+const cmd = [
+  "deno",
+  /^(.*[._])?test\.m?[tj]sx?$/.test(filename) ? "test" : "run",
+  ...options,
   fileFullPath,
 ];
 
