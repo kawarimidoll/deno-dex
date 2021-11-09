@@ -35,6 +35,16 @@ OPTIONS:
 ARGS:
   <FILENAME>              The file to run or test.`;
 
+function cliError(message: string) {
+  console.error(`${bold(red("error"))}: ${message}
+
+    USAGE:
+      dex [OPTIONS] <FILENAME>
+
+    For more information try --help`.replace(/^ {4}/, ""));
+  Deno.exit(1);
+}
+
 const {
   "_": args,
   clear,
@@ -56,26 +66,18 @@ const {
       q: "quiet",
       v: "version",
     },
+    unknown: (arg: string, key?: string) => {
+      if (key) {
+        cliError(`Found argument '${arg}' which wasn't expected`);
+      }
+    },
   },
 );
 
-function cliError(message: string) {
-  const errorMsg = `${message}
-
-USAGE:
-  dex [OPTIONS] <FILENAME>
-
-For more information try --help`;
-
-  console.error(bold(red("error")) + ":", errorMsg);
-}
-
 if (!args[0]) {
-  cliError("Filename is required as argument.");
-  Deno.exit(1);
+  cliError("Filename is required as argument");
 } else if (args.length > 1) {
-  cliError("Too many arguments found.");
-  Deno.exit(1);
+  cliError("Too many arguments found");
 }
 
 if (version) {
