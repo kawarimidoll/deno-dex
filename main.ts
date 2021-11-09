@@ -1,5 +1,17 @@
-import { basename, bold, parseCliArgs, red, resolve } from "./deps.ts";
+import {
+  basename,
+  bold,
+  dirname,
+  ensureDir,
+  getDenoDir,
+  join,
+  parseCliArgs,
+  red,
+  resolve,
+} from "./deps.ts";
 
+const DENO_DIR = await getDenoDir();
+const DEX_SCRIPT_PATH = join(DENO_DIR, "dex/script.ts");
 const VERSION = "0.1.0";
 const versionInfo = `dex ${VERSION}`;
 
@@ -17,6 +29,7 @@ USAGE:
 OPTIONS:
   -v, --version           Show the version number.
   -h, --help              Show the help message.
+  -c, --clear             Clear console when restarting process.
   -q, --quiet             Suppress console messages of dex.
 
 ARGS:
@@ -24,6 +37,7 @@ ARGS:
 
 const {
   "_": args,
+  clear,
   help,
   quiet,
   version,
@@ -31,11 +45,13 @@ const {
   Deno.args,
   {
     boolean: [
+      "clear",
       "help",
       "quiet",
       "version",
     ],
     alias: {
+      c: "clear",
       h: "help",
       q: "quiet",
       v: "version",
@@ -84,11 +100,17 @@ if (quiet) {
   options.push("--quiet");
 }
 
+await ensureDir(dirname(DEX_SCRIPT_PATH));
+await Deno.writeTextFile(
+  DEX_SCRIPT_PATH,
+  (clear ? "console.clear();" : "") + `import("${fileFullPath}")`,
+);
+
 const cmd = [
   "deno",
   /^(.*[._])?test\.m?[tj]sx?$/.test(filename) ? "test" : "run",
   ...options,
-  fileFullPath,
+  DEX_SCRIPT_PATH,
 ];
 
 const process = Deno.run({ cmd });

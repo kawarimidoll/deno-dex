@@ -4,6 +4,7 @@ scripts:
     cmd: main.ts examples/sample.ts
     allow:
       - read
+      - write
       - run
 
   deps:
