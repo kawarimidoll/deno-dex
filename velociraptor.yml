@@ -1,19 +1,16 @@
+allow:
+  - read
+  - write
+  - run
+
 scripts:
   main-sample:
     desc: Runs main script with sample.ts
     cmd: main.ts examples/sample.ts
-    allow:
-      - read
-      - write
-      - run
 
   main-test:
     desc: Runs main script with test.ts
     cmd: main.ts examples/test.ts
-    allow:
-      - read
-      - write
-      - run
 
   deps:
     desc: Update dependencies with ensuring pass tests
