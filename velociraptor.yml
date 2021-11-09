@@ -1,25 +1,10 @@
-# allow:
-#   - write
-#   - read
-#   - net
-#   - env
-
-# envFile:
-#   - .env
-
 scripts:
   main:
-    desc: Runs main script
-    cmd: main.ts
-
-  server:
-    desc: Starts local server
-    cmd: server.ts
-    watch: true
+    desc: Runs main script with sample.ts
+    cmd: main.ts examples/sample.ts
     allow:
       - read
-      - net
-      - env
+      - run
 
   deps:
     desc: Update dependencies with ensuring pass tests
