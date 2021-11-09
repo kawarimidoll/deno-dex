@@ -1,5 +1,4 @@
-import { basename, resolve } from "https://deno.land/std@0.113.0/path/mod.ts";
-import { parse as parseCliArgs } from "https://deno.land/std@0.113.0/flags/mod.ts";
+import { basename, parseCliArgs, resolve } from "./deps.ts";
 
 const VERSION = "0.1.0";
 const versionInfo = `dex ${VERSION}`;
