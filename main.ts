@@ -2,6 +2,7 @@ import {
   basename,
   bold,
   brightBlue,
+  brightGreen,
   dirname,
   ensureDir,
   getDenoDir,
@@ -50,6 +51,7 @@ function cliError(message: string) {
 const {
   "_": args,
   clear,
+  debug,
   help,
   quiet,
   version,
@@ -59,6 +61,7 @@ const {
   {
     boolean: [
       "clear",
+      "debug",
       "help",
       "quiet",
       "version",
@@ -80,6 +83,20 @@ const {
     },
   },
 );
+
+const debugLog = debug
+  ? (...args: unknown[]) => console.debug(brightGreen("Debug"), ...args)
+  : () => {};
+
+debugLog({
+  args,
+  clear,
+  debug,
+  help,
+  quiet,
+  version,
+  watch,
+});
 
 if (!args[0]) {
   cliError("Filename is required as argument");
@@ -107,12 +124,12 @@ const options = [
 if (quiet) {
   options.push("--quiet");
 }
+const dexScript = (clear ? "console.clear();" : "") +
+  `import("${fileFullPath}")`;
 
 await ensureDir(dirname(DEX_SCRIPT_PATH));
-await Deno.writeTextFile(
-  DEX_SCRIPT_PATH,
-  (clear ? "console.clear();" : "") + `import("${fileFullPath}")`,
-);
+await Deno.writeTextFile(DEX_SCRIPT_PATH, dexScript);
+debugLog({ dexScript });
 
 const cmd = [
   "deno",
@@ -120,6 +137,7 @@ const cmd = [
   ...options,
   DEX_SCRIPT_PATH,
 ];
+debugLog({ cmd });
 
 let process = Deno.run({ cmd });
 process.status();
