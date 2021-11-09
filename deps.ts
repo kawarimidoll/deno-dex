@@ -1,4 +1,8 @@
-export { bold, red } from "https://deno.land/std@0.113.0/fmt/colors.ts";
+export {
+  bold,
+  brightBlue,
+  red,
+} from "https://deno.land/std@0.113.0/fmt/colors.ts";
 export {
   basename,
   dirname,

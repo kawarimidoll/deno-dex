@@ -1,6 +1,7 @@
 import {
   basename,
   bold,
+  brightBlue,
   dirname,
   ensureDir,
   getDenoDir,
@@ -31,6 +32,7 @@ OPTIONS:
   -h, --help              Show the help message.
   -c, --clear             Clear console when restarting process.
   -q, --quiet             Suppress console messages of dex.
+  -w, --watch <filenames> Watch the given files. Comma-separated list is allowed.
 
 ARGS:
   <FILENAME>              The file to run or test.`;
@@ -51,6 +53,7 @@ const {
   help,
   quiet,
   version,
+  watch,
 } = parseCliArgs(
   Deno.args,
   {
@@ -60,11 +63,15 @@ const {
       "quiet",
       "version",
     ],
+    string: [
+      "watch",
+    ],
     alias: {
       c: "clear",
       h: "help",
       q: "quiet",
       v: "version",
+      w: "watch",
     },
     unknown: (arg: string, key?: string) => {
       if (key) {
@@ -114,5 +121,37 @@ const cmd = [
   DEX_SCRIPT_PATH,
 ];
 
-const process = Deno.run({ cmd });
+let process = Deno.run({ cmd });
 process.status();
+
+// [Build a live reloader and explore Deno! 🦕 - DEV Community](https://dev.to/otanriverdi/let-s-explore-deno-by-building-a-live-reloader-j47)
+if (watch) {
+  // https://github.com/denoland/deno/blob/0ec151b8cb2a92bb1765672fa15de23e6c8842d4/cli/file_watcher.rs#L32
+  const DEBOUNCE_INTERVAL = 200;
+
+  let reloading = false;
+  for await (const event of Deno.watchFs(watch.split(","))) {
+    if (event.kind !== "modify" || reloading) {
+      continue;
+    }
+    reloading = true;
+
+    if (!quiet) {
+      console.log(brightBlue("Watcher"), "File change detected! Restarting!");
+    }
+
+    try {
+      process.kill("SIGTERM");
+    } catch (error) {
+      if (error.message !== "ESRCH: No such process") {
+        throw error;
+      }
+    }
+
+    process.close();
+    process = Deno.run({ cmd });
+    process.status();
+
+    setTimeout(() => (reloading = false), DEBOUNCE_INTERVAL);
+  }
+}
