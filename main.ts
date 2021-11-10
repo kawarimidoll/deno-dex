@@ -48,7 +48,7 @@ function cliError(message: string) {
 }
 
 const {
-  "_": args,
+  "_": rawArgs,
   clear,
   debug,
   help,
@@ -75,6 +75,7 @@ const {
       v: "version",
       w: "watch",
     },
+    stopEarly: true,
     unknown: (arg: string, key?: string) => {
       if (key) {
         cliError(`Found argument '${arg}' which wasn't expected`);
@@ -87,6 +88,7 @@ const debugLog = debug
   ? (...args: unknown[]) => console.debug(green("Debug"), ...args)
   : () => {};
 
+const args = rawArgs.map((rawArg) => `${rawArg}`);
 debugLog({
   args,
   clear,
@@ -99,8 +101,6 @@ debugLog({
 
 if (!args[0]) {
   cliError("Filename is required as argument");
-} else if (args.length > 1) {
-  cliError("Too many arguments found");
 }
 
 if (version) {
@@ -112,7 +112,7 @@ if (help) {
   Deno.exit(0);
 }
 
-const fileFullPath = resolve(Deno.cwd(), `${args[0]}`);
+const fileFullPath = resolve(Deno.cwd(), args[0]);
 const dexScript = (clear ? "console.clear();" : "") +
   `import("${fileFullPath}")`;
 const dexScriptPath = join(await getDenoDir(), "dex/script.ts");
@@ -130,6 +130,7 @@ const cmd = [
   "--watch",
   ...(quiet ? ["--quiet"] : []),
   dexScriptPath,
+  ...args.slice(1),
 ];
 debugLog({ cmd });
 
