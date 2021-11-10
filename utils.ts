@@ -1,10 +1,11 @@
+import { basename } from "./deps.ts";
 /**
  * Check the filename is deno test file or not.
  * @param filename
  * @return filename is deno test file or not
  */
 export function isDenoTest(filename: string) {
-  return /^(.*[._])?test\.m?[tj]sx?$/.test(filename);
+  return /^(.*[._])?test\.m?[tj]sx?$/.test(basename(filename));
 }
 
 /**

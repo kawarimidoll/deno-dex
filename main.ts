@@ -1,5 +1,4 @@
 import {
-  basename,
   bold,
   brightBlue,
   dirname,
@@ -140,7 +139,7 @@ debugLog({ dexScript });
 
 const cmd = [
   "deno",
-  isDenoTest(basename(fileFullPath)) ? "test" : "run",
+  isDenoTest(fileFullPath) ? "test" : "run",
   "--allow-all",
   "--no-check",
   "--unstable",
