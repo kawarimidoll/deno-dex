@@ -1,4 +1,4 @@
-import { assertEquals } from "./deps.ts";
+import { assertEquals } from "./dev_deps.ts";
 import { isDenoTest } from "./utils.ts";
 // import { isDenoTest, runProcess, watchChanges } from "./utils.ts";
 
