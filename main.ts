@@ -21,29 +21,46 @@ An easy deno runner for development.
 
 Repository: https://github.com/kawarimidoll/deno-dex
 
-EXAMPLE:
+To run a script:
+
   dex hello.ts
 
+To run a test:
+
+  dex hello_test.ts
+
 USAGE:
-  dex [OPTIONS] <FILENAME>
+    dex [OPTIONS] <SCRIPT_ARG>...
 
 OPTIONS:
-  -v, --version           Show the version number.
-  -h, --help              Show the help message.
-  -c, --clear             Clear console when restarting process.
-  -q, --quiet             Suppress console messages of dex.
-  -w, --watch <filenames> Watch the given files. Comma-separated list is allowed.
+    -c, --clear
+        Clear console when restarting process.
+
+    -h, --help
+        Prints help information.
+
+    -q, --quiet
+        Suppress console messages of dex.
+
+    -v, --version
+        Prints version information.
+
+    -w, --watch <filenames>
+        Watch the given files. Comma-separated list is allowed.
 
 ARGS:
-  <FILENAME>              The file to run or test.`;
+    <SCRIPT_ARG>...
+        The script (and arguments) to run or test.`;
+
+const errorMsg = `
+USAGE:
+    dex [OPTIONS] <SCRIPT_ARG>...
+
+For more information try --help`;
 
 function cliError(message: string) {
-  console.error(`${bold(red("error"))}: ${message}
-
-    USAGE:
-      dex [OPTIONS] <FILENAME>
-
-    For more information try --help`.replace(/^ {4}/, ""));
+  console.error(`${bold(red("error"))}: ${message}`);
+  console.error(errorMsg);
   Deno.exit(1);
 }
 
@@ -99,10 +116,6 @@ debugLog({
   watch,
 });
 
-if (!args[0]) {
-  cliError("Filename is required as argument");
-}
-
 if (version) {
   console.log(versionInfo);
   Deno.exit(0);
@@ -110,6 +123,10 @@ if (version) {
 if (help) {
   console.log(helpMsg);
   Deno.exit(0);
+}
+
+if (!args[0]) {
+  cliError("Filename is required as argument");
 }
 
 const fileFullPath = resolve(Deno.cwd(), args[0]);
