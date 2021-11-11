@@ -12,6 +12,12 @@ scripts:
     desc: Runs main script with test.ts
     cmd: main.ts examples/test.ts
 
+  main-server:
+    desc: Runs main script with server.ts
+    cmd: main.ts examples/server.ts
+    allow:
+      - net
+
   deps:
     desc: Update dependencies with ensuring pass tests
     cmd: udd deps.ts --test="vr test"
