@@ -1,7 +1,7 @@
 import { name, sayHello } from "./resources.ts";
 
-console.log(Deno.args);
 console.log(sayHello(name));
+console.log({ sample_args: Deno.args });
 
 for (let i = 1; i < 11; i++) {
   setTimeout(() => {

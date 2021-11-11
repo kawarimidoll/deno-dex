@@ -135,7 +135,7 @@ const dexScriptPath = join(await getDenoDir(), "dex/script.ts");
 
 await ensureDir(dirname(dexScriptPath));
 await Deno.writeTextFile(dexScriptPath, dexScript);
-debugLog({ dexScript });
+debugLog({ dexScriptPath, dexScript });
 
 const cmd = [
   "deno",
