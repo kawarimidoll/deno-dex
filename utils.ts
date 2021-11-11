@@ -62,8 +62,9 @@ export function runProcess({
       if (error.message !== "ESRCH: No such process") {
         throw error;
       }
+    } finally {
+      ongoingProcess.close();
     }
-    ongoingProcess.close();
   }
 
   const process = Deno.run({ cmd });
