@@ -153,14 +153,11 @@ debugLog({ cmd });
 let process = runProcess({ cmd });
 
 if (watch) {
-  // https://github.com/denoland/deno/blob/0ec151b8cb2a92bb1765672fa15de23e6c8842d4/cli/file_watcher.rs#L32
-  const DEBOUNCE_INTERVAL = 200;
-
   watchChanges(watch.split(","), (event) => {
     debugLog({ detected: event.paths[0] });
     if (!quiet) {
       console.log(brightBlue("Watcher"), "File change detected! Restarting!");
     }
     process = runProcess({ cmd, ongoingProcess: process });
-  }, { interval: DEBOUNCE_INTERVAL });
+  });
 }

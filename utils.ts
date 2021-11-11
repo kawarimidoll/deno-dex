@@ -8,6 +8,8 @@ export function isDenoTest(filename: string) {
   return /^(.*[._])?test\.m?[tj]sx?$/.test(basename(filename));
 }
 
+// https://github.com/denoland/deno/blob/0ec151b8cb2a92bb1765672fa15de23e6c8842d4/cli/file_watcher.rs#L32
+export const DEFAULT_DEBOUNCE_INTERVAL = 200;
 /**
  * Watch changes under the path(s) and run onChange function.
  * This command is heavily inspired this article:
@@ -19,7 +21,7 @@ export function isDenoTest(filename: string) {
 export async function watchChanges(
   paths: string | string[],
   onChange: (event: Deno.FsEvent) => void,
-  config = { interval: 500 },
+  config = { interval: DEFAULT_DEBOUNCE_INTERVAL },
 ) {
   const watcher = Deno.watchFs(paths);
   let reloading = false;
