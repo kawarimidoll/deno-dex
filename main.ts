@@ -130,7 +130,7 @@ if (!args[0]) {
 
 const fileFullPath = resolve(Deno.cwd(), args[0]);
 const dexScript = (clear ? "console.clear();" : "") +
-  `import("${fileFullPath}")`;
+  `import "${fileFullPath}"`;
 const dexScriptPath = join(await getDenoDir(), "dex/script.ts");
 
 await ensureDir(dirname(dexScriptPath));
