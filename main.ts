@@ -63,6 +63,13 @@ function cliError(message: string) {
   Deno.exit(1);
 }
 
+const runOptions = [
+  "--allow-all",
+  "--no-check",
+  "--unstable",
+  "--watch",
+];
+
 const {
   "_": rawArgs,
   clear,
@@ -104,16 +111,19 @@ const debugLog = debug
   ? (...args: unknown[]) => console.debug(green("Debug"), ...args)
   : () => {};
 
+if (quiet) {
+  runOptions.push("--quiet");
+}
 const args = rawArgs.map((rawArg) => `${rawArg}`);
 debugLog({
   args,
   clear,
   debug,
   help,
-  quiet,
   version,
   watch,
 });
+debugLog({ runOptions });
 
 if (version) {
   console.log(versionInfo);
@@ -140,11 +150,7 @@ debugLog({ dexScriptPath, dexScript });
 const cmd = [
   "deno",
   isDenoTest(fileFullPath) ? "test" : "run",
-  "--allow-all",
-  "--no-check",
-  "--unstable",
-  "--watch",
-  ...(quiet ? ["--quiet"] : []),
+  ...runOptions,
   dexScriptPath,
   ...args.slice(1),
 ];
