@@ -92,17 +92,25 @@ const {
       "watch",
     ],
     alias: {
-      c: "clear",
       h: "help",
       q: "quiet",
       v: "version",
       w: "watch",
     },
     stopEarly: true,
-    unknown: (arg: string, key?: string) => {
-      if (key) {
-        cliError(`Found argument '${arg}' which wasn't expected`);
+    unknown: (arg: string, key?: string, value?: unknown) => {
+      // console.log({ arg, key, value, type: typeof value });
+      if (
+        !key || key.startsWith("allow-") ||
+        ["A", "no-check", "unstable"].includes(key)
+      ) {
+        return;
       }
+
+      runOptions.push(
+        (arg.startsWith("--") ? "--" : "-") + key +
+          (typeof value === "boolean" ? "" : "=" + value),
+      );
     },
   },
 );
