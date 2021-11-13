@@ -16,7 +16,7 @@ const VERSION = "0.1.0";
 const versionInfo = `dex ${VERSION}`;
 
 const helpMsg = `${versionInfo}
-An easy deno runner for development.
+A dexterous deno executor for development
 
 Repository: https://github.com/kawarimidoll/deno-dex
 
@@ -32,20 +32,20 @@ USAGE:
     dex [OPTIONS] <SCRIPT_ARG>...
 
 OPTIONS:
-    -c, --clear
+        --clear
         Clear console when restarting process.
 
     -h, --help
         Prints help information.
-
-    -q, --quiet
-        Suppress console messages of dex.
 
     -v, --version
         Prints version information.
 
     -w, --watch <filenames>
         Watch the given files. Comma-separated list is allowed.
+
+    Any other options are passed to 'deno' process transparently.
+    To show available options, run 'deno run --help' or 'deno test --help'.
 
 ARGS:
     <SCRIPT_ARG>...
