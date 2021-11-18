@@ -39,7 +39,8 @@ dex hello.ts
 # -> deno run --allow-all --unstable --no-check --watch hello.ts
 ```
 
-Test the file by `deno test` if the file is [test file](https://deno.land/manual/testing#testing):
+Test the file by `deno test` if the file is
+[test file](https://deno.land/manual/testing#testing):
 
 ```
 dex hello_test.ts
