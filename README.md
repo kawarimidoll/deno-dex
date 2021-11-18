@@ -1,26 +1,64 @@
-# deno-dev-template
+# deno-dex
 
-[![ci](https://github.com/kawarimidoll/deno-dev-template/workflows/ci/badge.svg)](.github/workflows/ci.yml)
-[![deno.land](https://img.shields.io/badge/deno-%5E1.13.0-green?logo=deno)](https://deno.land)
+[![ci](https://github.com/kawarimidoll/deno-dex/workflows/ci/badge.svg)](.github/workflows/ci.yml)
+[![deno.land](https://img.shields.io/badge/deno-%5E1.16.0-green?logo=deno)](https://deno.land)
 [![vr scripts](https://badges.velociraptor.run/flat.svg)](https://velociraptor.run)
 [![LICENSE](https://img.shields.io/badge/license-MIT-brightgreen)](LICENSE)
 
-my deno template
+A dexterous deno executor (only for development)
 
 ## Setup
 
-Need to install [Velociraptor](https://velociraptor.run/).
-
-Confirm there is `~/.deno/bin` in `$PATH` to use the scripts installed by
-`deno install`.
+Install by `deno install`:
 
 ```
-$ # install velociraptor
-$ deno install -qAn vr https://deno.land/x/velociraptor/cli.ts
-$ # install hook
-$ vr
+deno install --allow-read --allow-write --allow-run --reload --force --name dex https://pax.deno.dev/kawarimidoll/deno-dex/main.ts
 ```
 
-The scripts are defined in [velociraptor.yml](velociraptor.yml).
+The reasons why these permissions are required are:
 
-[![deploy](https://deno.com/deno-deploy-button.svg)](https://cloudy-owl-71.deno.dev/)
+- `read`: to watch file changes
+- `write`: to save intermediate script file
+- `run`: to run and kill process
+
+## Features
+
+- Run `deno run` or `deno test` for the file as argument.
+  - Detect the file is for test or not.
+  - Add `--allow-all --unstable --no-check --watch` for fast development.
+- There are several options.
+  - `--clear`: Clear console every restart.
+  - `--watch`: Watch changes of any files you specified.
+
+## Usage
+
+Run the file by `deno run`:
+
+```
+dex hello.ts
+# -> deno run --allow-all --unstable --no-check --watch hello.ts
+```
+
+Test the file by `deno test` if the file is [test file](https://deno.land/manual/testing#testing):
+
+```
+dex hello_test.ts
+# -> deno test --allow-all --unstable --no-check --watch hello_test.ts
+```
+
+For more details, see help:
+
+```
+dex --help
+```
+
+## Caution
+
+For productivity, this skips all checks (`--allow-all --unstable --no-check`).
+Use it only your local development.
+
+## Acknowledgements
+
+`--watch` option is heavily inspired by this article.
+
+[Build a live reloader and explore Deno! 🦕 - DEV Community](https://dev.to/otanriverdi/let-s-explore-deno-by-building-a-live-reloader-j47)
