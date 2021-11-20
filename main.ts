@@ -127,9 +127,6 @@ export function parseCliArgs(cliArgs: string[]): {
   if (quiet) {
     runOptions.push("--quiet");
   }
-  if (debug) {
-    console.debug(green("Debug"), { rawArgs, runOptions });
-  }
 
   return {
     args: rawArgs.map((rawArg) => `${rawArg}`),
