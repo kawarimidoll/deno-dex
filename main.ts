@@ -63,11 +63,16 @@ function cliError(message: string) {
   Deno.exit(1);
 }
 
-export function parseCliArgs(cliArgs: string[]) {
-  const lastOptionIndex = cliArgs.findIndex((arg) => !arg.startsWith("-"));
-  const options = cliArgs.slice(0, lastOptionIndex);
-  const scriptArgs = cliArgs.slice(lastOptionIndex);
-
+export function parseCliArgs(cliArgs: string[]): {
+  args: string[];
+  clear: boolean;
+  debug: boolean;
+  help: boolean;
+  quiet: boolean;
+  version: boolean;
+  watch: string[];
+  runOptions: string[];
+} {
   const runOptions = [
     "--allow-all",
     "--no-check",
@@ -75,6 +80,7 @@ export function parseCliArgs(cliArgs: string[]) {
     "--watch",
   ];
   const {
+    "_": rawArgs,
     clear,
     debug,
     help,
@@ -82,7 +88,7 @@ export function parseCliArgs(cliArgs: string[]) {
     version,
     watch,
   } = parse(
-    options,
+    cliArgs,
     {
       boolean: [
         "clear",
@@ -100,11 +106,12 @@ export function parseCliArgs(cliArgs: string[]) {
         v: "version",
         w: "watch",
       },
+      stopEarly: true,
       unknown: (arg: string, key?: string, value?: unknown) => {
         // console.log({ arg, key, value, type: typeof value });
         if (
           !key || key.startsWith("allow-") ||
-          ["A", "no-check", "unstable"].includes(key) ||
+          ["A", "unstable"].includes(key) ||
           arg === "--no-check"
         ) {
           return;
@@ -121,17 +128,17 @@ export function parseCliArgs(cliArgs: string[]) {
     runOptions.push("--quiet");
   }
   if (debug) {
-    console.debug(green("Debug"), { scriptArgs, runOptions });
+    console.debug(green("Debug"), { rawArgs, runOptions });
   }
 
   return {
-    args: scriptArgs,
+    args: rawArgs.map((rawArg) => `${rawArg}`),
     clear,
     debug,
     help,
     quiet,
     version,
-    watch: watch ? watch.split(",") : undefined,
+    watch: watch?.split(",") || [],
     runOptions,
   };
 }
@@ -196,8 +203,8 @@ async function main() {
 
   let process = runProcess({ cmd });
 
-  if (watch) {
-    watchChanges(watch.split(","), (event) => {
+  if (watch[0]) {
+    watchChanges(watch, (event) => {
       debugLog({ detected: event.paths[0] });
       if (!quiet) {
         console.log(brightBlue("Watcher"), "File change detected! Restarting!");
