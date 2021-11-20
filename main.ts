@@ -198,6 +198,9 @@ async function main() {
   ];
   debugLog({ cmd });
 
+  // wait a moment to prevent malfunction
+  await new Promise((resolve) => setTimeout(resolve, 10));
+
   let process = runProcess({ cmd });
 
   if (watch[0]) {
