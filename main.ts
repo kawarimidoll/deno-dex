@@ -6,7 +6,7 @@ import {
   getDenoDir,
   green,
   join,
-  parseCliArgs,
+  parse,
   red,
   resolve,
 } from "./deps.ts";
@@ -63,114 +63,150 @@ function cliError(message: string) {
   Deno.exit(1);
 }
 
-const runOptions = [
-  "--allow-all",
-  "--no-check",
-  "--unstable",
-  "--watch",
-];
+export function parseCliArgs(cliArgs: string[]) {
+  const lastOptionIndex = cliArgs.findIndex((arg) => !arg.startsWith("-"));
+  const options = cliArgs.slice(0, lastOptionIndex);
+  const scriptArgs = cliArgs.slice(lastOptionIndex);
 
-const {
-  "_": rawArgs,
-  clear,
-  debug,
-  help,
-  quiet,
-  version,
-  watch,
-} = parseCliArgs(
-  Deno.args,
-  {
-    boolean: [
-      "clear",
-      "debug",
-      "help",
-      "quiet",
-      "version",
-    ],
-    string: [
-      "watch",
-    ],
-    alias: {
-      h: "help",
-      q: "quiet",
-      v: "version",
-      w: "watch",
+  const runOptions = [
+    "--allow-all",
+    "--no-check",
+    "--unstable",
+    "--watch",
+  ];
+  const {
+    clear,
+    debug,
+    help,
+    quiet,
+    version,
+    watch,
+  } = parse(
+    options,
+    {
+      boolean: [
+        "clear",
+        "debug",
+        "help",
+        "quiet",
+        "version",
+      ],
+      string: [
+        "watch",
+      ],
+      alias: {
+        h: "help",
+        q: "quiet",
+        v: "version",
+        w: "watch",
+      },
+      unknown: (arg: string, key?: string, value?: unknown) => {
+        // console.log({ arg, key, value, type: typeof value });
+        if (
+          !key || key.startsWith("allow-") ||
+          ["A", "no-check", "unstable"].includes(key) ||
+          arg === "--no-check"
+        ) {
+          return;
+        }
+
+        runOptions.push(
+          (arg.startsWith("--") ? "--" : "-") + key +
+            (typeof value === "boolean" ? "" : "=" + value),
+        );
+      },
     },
-    stopEarly: true,
-    unknown: (arg: string, key?: string, value?: unknown) => {
-      // console.log({ arg, key, value, type: typeof value });
-      if (
-        !key || key.startsWith("allow-") ||
-        ["A", "no-check", "unstable"].includes(key)
-      ) {
-        return;
-      }
+  );
+  if (quiet) {
+    runOptions.push("--quiet");
+  }
+  if (debug) {
+    console.debug(green("Debug"), { scriptArgs, runOptions });
+  }
 
-      runOptions.push(
-        (arg.startsWith("--") ? "--" : "-") + key +
-          (typeof value === "boolean" ? "" : "=" + value),
-      );
-    },
-  },
-);
-
-const debugLog = debug
-  ? (...args: unknown[]) => console.debug(green("Debug"), ...args)
-  : () => {};
-
-if (quiet) {
-  runOptions.push("--quiet");
-}
-const args = rawArgs.map((rawArg) => `${rawArg}`);
-debugLog({
-  args,
-  clear,
-  debug,
-  help,
-  version,
-  watch,
-});
-debugLog({ runOptions });
-
-if (version) {
-  console.log(versionInfo);
-  Deno.exit(0);
-}
-if (help) {
-  console.log(helpMsg);
-  Deno.exit(0);
+  return {
+    args: scriptArgs,
+    clear,
+    debug,
+    help,
+    quiet,
+    version,
+    watch: watch ? watch.split(",") : undefined,
+    runOptions,
+  };
 }
 
-if (!args[0]) {
-  cliError("Filename is required as argument");
-}
+async function main() {
+  const {
+    args,
+    clear,
+    debug,
+    help,
+    quiet,
+    version,
+    watch,
+    runOptions,
+  } = parseCliArgs(Deno.args);
 
-const fileFullPath = resolve(Deno.cwd(), args[0]);
-const dexScript = `${clear ? "console.clear();" : ""}import("${fileFullPath}")`;
-const dexScriptPath = join(await getDenoDir(), "dex/script.ts");
+  const debugLog = debug
+    ? (...args: unknown[]) => console.debug(green("Debug"), ...args)
+    : () => {};
 
-await ensureDir(dirname(dexScriptPath));
-await Deno.writeTextFile(dexScriptPath, dexScript);
-debugLog({ dexScriptPath, dexScript });
-
-const cmd = [
-  "deno",
-  isDenoTest(fileFullPath) ? "test" : "run",
-  ...runOptions,
-  dexScriptPath,
-  ...args.slice(1),
-];
-debugLog({ cmd });
-
-let process = runProcess({ cmd });
-
-if (watch) {
-  watchChanges(watch.split(","), (event) => {
-    debugLog({ detected: event.paths[0] });
-    if (!quiet) {
-      console.log(brightBlue("Watcher"), "File change detected! Restarting!");
-    }
-    process = runProcess({ cmd, ongoingProcess: process });
+  debugLog({
+    args,
+    clear,
+    debug,
+    help,
+    version,
+    watch,
+    runOptions,
   });
+
+  if (version) {
+    console.log(versionInfo);
+    Deno.exit(0);
+  }
+  if (help) {
+    console.log(helpMsg);
+    Deno.exit(0);
+  }
+
+  if (!args[0]) {
+    cliError("Filename is required as argument");
+  }
+
+  const fileFullPath = resolve(Deno.cwd(), args[0]);
+  const dexScript = `${
+    clear ? "console.clear();" : ""
+  }import("${fileFullPath}")`;
+  const dexScriptPath = join(await getDenoDir(), "dex/script.ts");
+
+  await ensureDir(dirname(dexScriptPath));
+  await Deno.writeTextFile(dexScriptPath, dexScript);
+  debugLog({ dexScriptPath, dexScript });
+
+  const cmd = [
+    "deno",
+    isDenoTest(fileFullPath) ? "test" : "run",
+    ...runOptions,
+    dexScriptPath,
+    ...args.slice(1),
+  ];
+  debugLog({ cmd });
+
+  let process = runProcess({ cmd });
+
+  if (watch) {
+    watchChanges(watch.split(","), (event) => {
+      debugLog({ detected: event.paths[0] });
+      if (!quiet) {
+        console.log(brightBlue("Watcher"), "File change detected! Restarting!");
+      }
+      process = runProcess({ cmd, ongoingProcess: process });
+    });
+  }
+}
+
+if (import.meta.main) {
+  main();
 }
