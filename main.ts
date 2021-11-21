@@ -28,8 +28,12 @@ To run a test:
 
   dex hello_test.ts
 
+With arguments or options:
+
+  dex hello.ts -- -a 1 -b 2
+
 USAGE:
-    dex [OPTIONS] <SCRIPT_ARG>...
+    dex [OPTIONS] <FILE_PATH>
 
 OPTIONS:
         --clear
@@ -48,12 +52,16 @@ OPTIONS:
     To show available options, run 'deno run --help' or 'deno test --help'.
 
 ARGS:
-    <SCRIPT_ARG>...
-        The script (and arguments) to run or test.`;
+    <FILE_PATH>
+        The script file path to run or test.
+
+    When you want to pass arguments to the script, use '--' before passing them.
+
+    dex hello.ts -- -a 1 -b 2`;
 
 const errorMsg = `
 USAGE:
-    dex [OPTIONS] <SCRIPT_ARG>...
+    dex [OPTIONS] <FILE_PATH>
 
 For more information try --help`;
 
@@ -179,7 +187,7 @@ async function main() {
   }
 
   if (!args[0]) {
-    cliError("Filename is required as argument");
+    cliError("File path is required as argument");
   }
 
   const fileFullPath = resolve(Deno.cwd(), args[0]);
