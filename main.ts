@@ -73,6 +73,11 @@ export function parseCliArgs(cliArgs: string[]): {
   watch: string[];
   runOptions: string[];
 } {
+  const separatorIndex = cliArgs.indexOf("--");
+  const scriptArgs = separatorIndex > 0
+    ? [cliArgs.at(separatorIndex - 1), ...cliArgs.slice(separatorIndex + 1)]
+    : cliArgs.slice(-1);
+
   const runOptions = [
     "--allow-all",
     "--no-check",
@@ -80,7 +85,6 @@ export function parseCliArgs(cliArgs: string[]): {
     "--watch",
   ];
   const {
-    "_": rawArgs,
     clear,
     debug,
     help,
@@ -88,7 +92,7 @@ export function parseCliArgs(cliArgs: string[]): {
     version,
     watch,
   } = parse(
-    cliArgs,
+    cliArgs.slice(0, separatorIndex),
     {
       boolean: [
         "clear",
@@ -106,7 +110,6 @@ export function parseCliArgs(cliArgs: string[]): {
         v: "version",
         w: "watch",
       },
-      stopEarly: true,
       unknown: (arg: string, key?: string, value?: unknown) => {
         // console.log({ arg, key, value, type: typeof value });
         if (
@@ -129,7 +132,7 @@ export function parseCliArgs(cliArgs: string[]): {
   }
 
   return {
-    args: rawArgs.map((rawArg) => `${rawArg}`),
+    args: scriptArgs.map((rawArg) => `${rawArg}`),
     clear,
     debug,
     help,
