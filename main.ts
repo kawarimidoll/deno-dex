@@ -93,11 +93,25 @@ export function parseCliArgs(cliArgs: string[]): {
     "--watch",
   ];
   const {
+    help,
+    version,
+  } = parse(
+    cliArgs,
+    {
+      boolean: [
+        "help",
+        "version",
+      ],
+      alias: {
+        h: "help",
+        v: "version",
+      },
+    },
+  );
+  const {
     clear,
     debug,
-    help,
     quiet,
-    version,
     watch,
   } = parse(
     cliArgs.slice(0, separatorIndex),

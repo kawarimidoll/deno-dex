@@ -111,6 +111,13 @@ Deno.test("[parseCliArgs] pattern 4", () => {
   ]);
 });
 
+Deno.test("[parseCliArgs] pattern 5", () => {
+  assert(parseCliArgs(["--help"]).help);
+  assert(parseCliArgs(["-h"]).help);
+  assert(parseCliArgs(["--version"]).version);
+  assert(parseCliArgs(["-v"]).version);
+});
+
 Deno.test("isDenoTest", () => {
   assertEquals(isDenoTest("main.ts"), false);
   assertEquals(isDenoTest("test.ts"), true);
