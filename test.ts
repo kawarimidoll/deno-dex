@@ -17,6 +17,7 @@ Deno.test("[parseCliArgs] pattern 1", () => {
     "--allow-all",
     "-q",
     "main.ts",
+    "--",
     "--script-flag",
     "script-arg",
   ]);
@@ -94,6 +95,19 @@ Deno.test("[parseCliArgs] pattern 3", () => {
     "-f",
     "-c=deno.json",
     "--quiet",
+  ]);
+});
+
+Deno.test("[parseCliArgs] pattern 4", () => {
+  const { args, runOptions } = parseCliArgs(["--shuffle", "test.ts"]);
+
+  assertEquals(args, ["test.ts"]);
+  assertEquals(runOptions, [
+    "--allow-all",
+    "--no-check",
+    "--unstable",
+    "--watch",
+    "--shuffle",
   ]);
 });
 
