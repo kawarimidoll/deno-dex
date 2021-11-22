@@ -11,8 +11,8 @@ import {
   resolve,
 } from "./deps.ts";
 import { isDenoTest, runProcess, watchChanges } from "./utils.ts";
+import { VERSION } from "./version.ts";
 
-const VERSION = "0.1.0";
 const versionInfo = `dex ${VERSION}`;
 
 const helpMsg = `${versionInfo}
