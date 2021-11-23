@@ -75,3 +75,33 @@ export function runProcess({
   process.status();
   return process;
 }
+
+/**
+ * Insert '--' before first argument.
+ * @param args arguments to process
+ * @param needEquals options that have optional arguments
+ * @return processed arguments
+ * @throws error when items in needEquals does not start with '--'
+ */
+export function ensureOptsArgs(args: string[], needEquals: string[]) {
+  needEquals.forEach((option) => {
+    if (!/^--[a-z]/.test(option)) {
+      throw new Error(
+        "Item in needEquals must be start with '--', but got " + option,
+      );
+    }
+  });
+
+  for (let i = 0; i < args.length - 1; i++) {
+    if (!needEquals.includes(args[i])) {
+      continue;
+    }
+    if (args[i + 1].startsWith("-")) {
+      continue;
+    }
+
+    return [...args.slice(0, i + 1), "--", ...args.slice(i + 1)];
+  }
+
+  return args;
+}
