@@ -29,6 +29,7 @@ The reasons why these permissions are required are:
 - There are several options.
   - `--clear`: Clear console every restart.
   - `--watch`: Watch changes of any files you specified.
+  - Other options are passed to `deno run` or `deno test` transparently.
 
 ## Usage
 
