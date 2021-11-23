@@ -33,12 +33,12 @@ To run a test:
 
   dex hello_test.ts
 
-With arguments or options:
+To pass arguments or options to script:
 
-  dex hello.ts -- -a 1 -b 2
+  dex hello.ts -a 1 --foo=bar baz
 
 USAGE:
-    dex [OPTIONS] <FILE_PATH>
+    dex [OPTIONS] <SCRIPT_ARGS>...
 
 OPTIONS:
         --clear
@@ -57,16 +57,12 @@ OPTIONS:
     To show available options, run 'deno run --help' or 'deno test --help'.
 
 ARGS:
-    <FILE_PATH>
-        The script file path to run or test.
-
-    When you want to pass arguments to the script, use '--' before passing them.
-
-    dex hello.ts -- -a 1 -b 2`;
+    <SCRIPT_ARGS>...
+        The script file path (and arguments) to run or test.`;
 
 const errorMsg = `
 USAGE:
-    dex [OPTIONS] <FILE_PATH>
+    dex [OPTIONS] <SCRIPT_ARGS>...
 
 For more information try --help`;
 
