@@ -1,6 +1,6 @@
 import { assert, assertEquals } from "./dev_deps.ts";
-import { parseCliArgs } from "./main.ts";
-import { isDenoTest } from "./utils.ts";
+import { NEED_EQUALS, parseCliArgs } from "./main.ts";
+import { ensureOptsArgs, isDenoTest } from "./utils.ts";
 // import { isDenoTest, runProcess, watchChanges } from "./utils.ts";
 
 Deno.test("[parseCliArgs] pattern 1", () => {
@@ -17,7 +17,6 @@ Deno.test("[parseCliArgs] pattern 1", () => {
     "--allow-all",
     "-q",
     "main.ts",
-    "--",
     "--script-flag",
     "script-arg",
   ]);
@@ -116,6 +115,44 @@ Deno.test("[parseCliArgs] pattern 5", () => {
   assert(parseCliArgs(["-h"]).help);
   assert(parseCliArgs(["--version"]).version);
   assert(parseCliArgs(["-v"]).version);
+});
+
+Deno.test("[ensureOptsArgs] update args", () => {
+  assertEquals(
+    ensureOptsArgs(
+      ["--allow-read", "a.ts", "--allow-write", "b.ts"],
+      NEED_EQUALS,
+    ),
+    [
+      "--allow-read",
+      "--",
+      "a.ts",
+      "--allow-write",
+      "b.ts",
+    ],
+  );
+  assertEquals(
+    ensureOptsArgs(["--allow-read=a.ts", "--allow-write", "b.ts"], NEED_EQUALS),
+    [
+      "--allow-read=a.ts",
+      "--allow-write",
+      "--",
+      "b.ts",
+    ],
+  );
+  assertEquals(
+    ensureOptsArgs(
+      ["--allow-read", "--allow-write", "a.ts", "b.ts"],
+      NEED_EQUALS,
+    ),
+    [
+      "--allow-read",
+      "--allow-write",
+      "--",
+      "a.ts",
+      "b.ts",
+    ],
+  );
 });
 
 Deno.test("isDenoTest", () => {
