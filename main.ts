@@ -10,7 +10,12 @@ import {
   red,
   resolve,
 } from "./deps.ts";
-import { isDenoTest, runProcess, watchChanges } from "./utils.ts";
+import {
+  ensureOptsArgs,
+  isDenoTest,
+  runProcess,
+  watchChanges,
+} from "./utils.ts";
 import { VERSION } from "./version.ts";
 
 const versionInfo = `dex ${VERSION}`;
@@ -71,6 +76,23 @@ function cliError(message: string) {
   Deno.exit(1);
 }
 
+const NEED_EQUALS = [
+  "--allow-env",
+  "--allow-ffi",
+  "--allow-net",
+  "--allow-read",
+  "--allow-run",
+  "--allow-write",
+  "--coverage",
+  "--fail-fast",
+  "--inspect",
+  "--inspect-brk",
+  "--reload",
+  "--shuffle",
+  "--unsafely-ignore-certificate-errors",
+  "--v8-flags",
+];
+
 export function parseCliArgs(cliArgs: string[]): {
   args: string[];
   clear: boolean;
@@ -81,11 +103,6 @@ export function parseCliArgs(cliArgs: string[]): {
   watch: string[];
   runOptions: string[];
 } {
-  const separatorIndex = cliArgs.indexOf("--");
-  const scriptArgs = separatorIndex > 0
-    ? [cliArgs.at(separatorIndex - 1), ...cliArgs.slice(separatorIndex + 1)]
-    : cliArgs.slice(-1);
-
   const runOptions = [
     "--allow-all",
     "--no-check",
@@ -93,28 +110,15 @@ export function parseCliArgs(cliArgs: string[]): {
     "--watch",
   ];
   const {
+    _: rawArgs,
+    clear,
     help,
     version,
-  } = parse(
-    cliArgs,
-    {
-      boolean: [
-        "help",
-        "version",
-      ],
-      alias: {
-        h: "help",
-        v: "version",
-      },
-    },
-  );
-  const {
-    clear,
     debug,
     quiet,
     watch,
   } = parse(
-    cliArgs.slice(0, separatorIndex),
+    ensureOptsArgs(cliArgs, NEED_EQUALS),
     {
       boolean: [
         "clear",
@@ -132,6 +136,7 @@ export function parseCliArgs(cliArgs: string[]): {
         v: "version",
         w: "watch",
       },
+      stopEarly: true,
       unknown: (arg: string, key?: string, value?: unknown) => {
         // console.log({ arg, key, value, type: typeof value });
         if (
@@ -154,7 +159,7 @@ export function parseCliArgs(cliArgs: string[]): {
   }
 
   return {
-    args: scriptArgs.map((rawArg) => `${rawArg}`),
+    args: rawArgs.map((rawArg) => `${rawArg}`),
     clear,
     debug,
     help,
