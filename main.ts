@@ -72,7 +72,7 @@ function cliError(message: string) {
   Deno.exit(1);
 }
 
-const NEED_EQUALS = [
+export const NEED_EQUALS = [
   "--allow-env",
   "--allow-ffi",
   "--allow-net",
