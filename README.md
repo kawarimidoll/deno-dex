@@ -17,8 +17,8 @@ deno install --allow-read --allow-write --allow-run --reload --force --name dex 
 
 The reasons why these permissions are required are:
 
-- `read`: to watch file changes
-- `write`: to save intermediate script file
+- `read`: to watch file changes and current working directory
+- `write`: to save intermediate script file in `$DENO_DIR`
 - `run`: to run and kill process
 
 ## Features
@@ -30,6 +30,17 @@ The reasons why these permissions are required are:
   - `--clear`: Clear console every restart.
   - `--watch`: Watch changes of any files you specified.
   - Other options are passed to `deno run` or `deno test` transparently.
+- Auto-detect
+  [import-map](https://deno.land/manual@v1.16.0/linking_to_external_code/import_maps)
+  and
+  [configuration files](https://deno.land/manual@v1.16.0/getting_started/configuration_file).
+  - When `dex` starts without `--import-map` option and there is
+    `import_map.json`, `--import-map=import_map.json` is implicitly added.
+  - When `dex` starts without `--config` option and there is one of
+    `deno.jsonc`, `deno.json` or `tsconfig.json`, `--config=[one of them]` is
+    implicitly added.
+  - The arguments of `--import-map` and `--config` are also passed to `--watch`
+    option of `dex`.
 
 ## Usage
 
