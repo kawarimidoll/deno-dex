@@ -48,7 +48,6 @@ scripts:
   test:
     desc: Runs the tests
     cmd: deno test --reload
-    gitHook: pre-push
 
   cov:
     desc: Shows uncovered lists
@@ -62,6 +61,7 @@ scripts:
       - vr lint
       - vr fmt --check
       - vr test
+    gitHook: pre-push
 
   commitlint:
     # dependencies: commitlint and @commitlint/config-conventional
