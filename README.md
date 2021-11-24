@@ -7,6 +7,8 @@
 
 A dexterous deno executor (only for development)
 
+Commentary article in Japanese: [upcoming]
+
 ## Setup
 
 Install by `deno install`:
@@ -31,7 +33,7 @@ The reasons why these permissions are required are:
   - `--watch`: Watch changes of any files you specified.
   - Other options are passed to `deno run` or `deno test` transparently.
 - Auto-detect
-  [import-map](https://deno.land/manual@v1.16.0/linking_to_external_code/import_maps)
+  [import maps](https://deno.land/manual@v1.16.0/linking_to_external_code/import_maps)
   and
   [configuration files](https://deno.land/manual@v1.16.0/getting_started/configuration_file).
   - When `dex` starts without `--import-map` option and there is
@@ -69,6 +71,21 @@ dex --help
 
 For productivity, this skips all checks (`--allow-all --unstable --no-check`).
 Use it only your local development.
+
+## Neovim command
+
+If you using [Neovim](https://neovim.io/), put the command below in your
+`init.vim` to define `:Dex` command.
+
+```vim
+command! -nargs=* -bang Dex silent only | botright 12 split |
+    \ execute 'terminal dex ' . (<bang>0 ? '--clear ' : '') . <q-args> . ' ' . expand('%:p') |
+    \ stopinsert | execute 'normal! G' | set bufhidden=wipe | wincmd k
+```
+
+- `:Dex` to run `dex` with the current file in the terminal window under editor area.
+  - `:Dex` accepts runtime options, like as `:Dex --quite`
+- `:Dex!` is shorthand of `:Dex --clear`
 
 ## Acknowledgements
 
