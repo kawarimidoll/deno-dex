@@ -236,6 +236,11 @@ async function main() {
     }
   }
 
+  runOptions.forEach((option) => {
+    const file = option.match(/^-(c|-config|-import-map)=(\S+)/)?.at(2);
+    if (file) watch.push(file);
+  });
+
   const cmd = [
     "deno",
     isDenoTest(fileFullPath) ? "test" : "run",
