@@ -83,7 +83,8 @@ command! -nargs=* -bang Dex silent only | botright 12 split |
     \ stopinsert | execute 'normal! G' | set bufhidden=wipe | wincmd k
 ```
 
-- `:Dex` to run `dex` with the current file in the terminal window under editor area.
+- `:Dex` to run `dex` with the current file in the terminal window under editor
+  area.
   - `:Dex` accepts runtime options, like as `:Dex --quite`
 - `:Dex!` is shorthand of `:Dex --clear`
 
