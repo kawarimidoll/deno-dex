@@ -215,6 +215,27 @@ async function main() {
   await Deno.writeTextFile(dexScriptPath, dexScript);
   debugLog({ dexScriptPath, dexScript });
 
+  const filesInCwd: string[] = [];
+  for await (const dirEntry of Deno.readDir(".")) {
+    if (dirEntry.isFile) {
+      filesInCwd.push(dirEntry.name);
+    }
+  }
+  if (!runOptions.find((option) => /^--import-map=\S/.test(option))) {
+    if (filesInCwd.includes("import_map.json")) {
+      runOptions.push("--import-map=import_map.json");
+    }
+  }
+  if (!runOptions.find((option) => /^-(c|-config)=\S/.test(option))) {
+    const configFiles = ["deno.jsonc", "deno.json", "tsconfig.json"];
+    for (const configFile of configFiles) {
+      if (filesInCwd.includes(configFile)) {
+        runOptions.push(`--config=${configFile}`);
+        break;
+      }
+    }
+  }
+
   const cmd = [
     "deno",
     isDenoTest(fileFullPath) ? "test" : "run",
