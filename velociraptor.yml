@@ -18,6 +18,11 @@ scripts:
     allow:
       - net
 
+  install:
+    desc: Install main script
+    cmd: deno install --force --name dex main.ts
+    reload: true
+
   deps:
     desc: Update dependencies with ensuring pass tests
     cmd: udd deps.ts dev_deps.ts --test="vr test"
