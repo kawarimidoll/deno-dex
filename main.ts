@@ -16,7 +16,7 @@ import {
   runProcess,
   watchChanges,
 } from "./utils.ts";
-import { VERSION } from "./version.ts";
+import { NEED_EQUALS, VERSION } from "./const.ts";
 
 const versionInfo = `dex ${VERSION}`;
 
@@ -71,23 +71,6 @@ function cliError(message: string) {
   console.error(errorMsg);
   Deno.exit(1);
 }
-
-export const NEED_EQUALS = [
-  "--allow-env",
-  "--allow-ffi",
-  "--allow-net",
-  "--allow-read",
-  "--allow-run",
-  "--allow-write",
-  "--coverage",
-  "--fail-fast",
-  "--inspect",
-  "--inspect-brk",
-  "--reload",
-  "--shuffle",
-  "--unsafely-ignore-certificate-errors",
-  "--v8-flags",
-];
 
 export function parseCliArgs(cliArgs: string[]): {
   args: string[];
