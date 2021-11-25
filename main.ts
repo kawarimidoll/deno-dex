@@ -149,7 +149,7 @@ export function parseCliArgs(cliArgs: string[]): {
   };
 }
 
-async function main() {
+async function main(cliArgs: string[]) {
   const {
     args,
     clear,
@@ -159,7 +159,7 @@ async function main() {
     version,
     watch,
     runOptions,
-  } = parseCliArgs(Deno.args);
+  } = parseCliArgs(cliArgs);
 
   const debugLog = debug
     ? (...args: unknown[]) => console.debug(green("Debug"), ...args)
@@ -250,5 +250,5 @@ async function main() {
 }
 
 if (import.meta.main) {
-  main();
+  main(Deno.args);
 }
