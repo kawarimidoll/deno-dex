@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.114.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.116.0/http/server.ts";
 
 const addr = ":8080";
 console.log(`HTTP server listening on http://localhost${addr}`);
