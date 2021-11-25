@@ -69,17 +69,23 @@ dex --help
 
 ## Caution
 
-For productivity, this skips all checks (`--allow-all --unstable --no-check`).
-Use it only your local development.
+As written above, `dex` skips all checks (`--allow-all --unstable --no-check`).
+This increases productivity in development, but decreases security. Use it only
+for your own code.
 
-## Neovim command
+When [`Deno.exit()`](https://doc.deno.land/builtin/stable#Deno.exit) is called,
+process will be stopped without restarting. This is same as normal
+`deno run --watch` behavior.
 
-If you using [Neovim](https://neovim.io/), put the command below in your
-`init.vim` to define `:Dex` command.
+## Vim/Neovim command
+
+If you using Vim or Neovim, put the definition below in your configuration file
+to enable `:Dex` command.
 
 ```vim
-command! -nargs=* -bang Dex silent only | botright 12 split |
-    \ execute 'terminal dex ' . (<bang>0 ? '--clear ' : '') . <q-args> . ' ' . expand('%:p') |
+command! -nargs=* -bang Dex silent only! | botright 12 split |
+    \ execute 'terminal' (has('nvim') ? '' : '++curwin') 'dex'
+    \   (<bang>0 ? '--clear' : '') <q-args> expand('%:p') |
     \ stopinsert | execute 'normal! G' | set bufhidden=wipe | wincmd k
 ```
 
@@ -93,3 +99,13 @@ command! -nargs=* -bang Dex silent only | botright 12 split |
 `--watch` option is heavily inspired by this article.
 
 [Build a live reloader and explore Deno! 🦕 - DEV Community](https://dev.to/otanriverdi/let-s-explore-deno-by-building-a-live-reloader-j47)
+
+---
+
+```ts
+if (this.repo.isAwesome || this.repo.isHelpful) {
+  star(this.repo);
+}
+```
+
+<!-- this part is inspired by https://github.com/bhumijgupta/Deno-news-cli -->
