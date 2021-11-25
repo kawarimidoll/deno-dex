@@ -7,7 +7,8 @@
 
 A dexterous deno executor (only for development)
 
-Commentary article in Japanese: https://zenn.dev/kawarimidoll/articles/d371abbd46b65b
+Commentary article in Japanese:
+https://zenn.dev/kawarimidoll/articles/d371abbd46b65b
 
 ## Setup
 
