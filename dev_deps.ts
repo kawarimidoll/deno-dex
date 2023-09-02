@@ -2,5 +2,5 @@ export {
   assert,
   assertEquals,
   assertThrows,
-} from "https://deno.land/std@0.198.0/testing/asserts.ts";
-export { serve } from "https://deno.land/std@0.198.0/http/server.ts";
+} from "https://deno.land/std@0.201.0/testing/asserts.ts";
+export { serve } from "https://deno.land/std@0.201.0/http/server.ts";
